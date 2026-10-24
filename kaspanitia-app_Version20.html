@@ -1,0 +1,2155 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KasPanitia Premium</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.1.1/jspdf.umd.min.js"></script>
+    <style>
+      :root {
+        --bg: #f4f7f6;
+        --panel: #ffffff;
+        --panel-soft: #f7faf9;
+        --primary: #1e5b4d;
+        --primary-2: #163f36;
+        --primary-soft: #eaf4f1;
+        --accent: #f4d66d;
+        --text: #162321;
+        --muted: #65756d;
+        --line: #dfeae7;
+        --success: #1f8e59;
+        --danger: #d94c4c;
+        --warning: #b57a1f;
+        --info: #2d6ec8;
+        --shadow: 0 14px 30px rgba(17, 34, 28, 0.08);
+        --radius: 18px;
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.5;
+      }
+
+      button, input, select, textarea { font: inherit; }
+      button { cursor: pointer; }
+      a { color: inherit; text-decoration: none; }
+      .hidden { display: none !important; }
+
+      .auth-page {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 32px 16px;
+        background:
+          radial-gradient(circle at top left, rgba(30,91,77,0.12), transparent 32%),
+          radial-gradient(circle at bottom right, rgba(244,214,109,0.15), transparent 28%),
+          linear-gradient(180deg, #eef5f2, #f5f8f7);
+      }
+
+      .auth-card {
+        width: min(100%, 440px);
+        background: rgba(255,255,255,0.98);
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        box-shadow: var(--shadow);
+        padding: 28px 22px;
+      }
+
+      .auth-brand {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+
+      .auth-badge {
+        width: 72px;
+        height: 72px;
+        border-radius: 18px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(180deg, var(--primary), var(--primary-2));
+        color: white;
+        font-size: 1.7rem;
+        font-weight: 800;
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+      }
+
+      .auth-brand strong {
+        display: block;
+        font-size: 1.2rem;
+      }
+
+      .auth-brand small {
+        display: block;
+        color: var(--muted);
+      }
+
+      .auth-title {
+        margin: 0 0 8px;
+        text-align: center;
+        font-size: 2rem;
+      }
+
+      .auth-subtitle {
+        margin: 0 0 22px;
+        text-align: center;
+        color: var(--muted);
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+
+      .label {
+        display: block;
+        color: var(--primary);
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+
+      input, select, textarea {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: white;
+        padding: 10px 12px;
+        color: var(--text);
+        outline: none;
+      }
+
+      textarea { min-height: 92px; resize: vertical; }
+
+      .btn {
+        border: none;
+        border-radius: 12px;
+        padding: 10px 14px;
+        font-weight: 700;
+      }
+
+      .btn.primary {
+        width: 100%;
+        background: linear-gradient(180deg, var(--primary), var(--primary-2));
+        color: white;
+      }
+
+      .btn.secondary {
+        background: var(--primary-soft);
+        color: var(--primary);
+        border: 1px solid var(--line);
+      }
+
+      .btn.warning {
+        background: #fff6df;
+        color: var(--warning);
+        border: 1px solid #efd7a1;
+      }
+
+      .btn.danger {
+        background: #fff0f0;
+        color: var(--danger);
+        border: 1px solid #efcaca;
+      }
+
+      .login-error {
+        display: none;
+        margin-top: 12px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: #fff0f0;
+        border: 1px solid #efcaca;
+        color: var(--danger);
+        font-size: 0.85rem;
+      }
+
+      .login-error.show { display: block; }
+
+      .app-shell {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        background: linear-gradient(180deg, var(--primary-2), var(--primary));
+        color: white;
+        padding: 22px 16px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 8px 18px;
+        border-bottom: 1px solid rgba(255,255,255,0.14);
+        margin-bottom: 12px;
+      }
+
+      .brand-badge {
+        width: 58px;
+        height: 58px;
+        border-radius: 16px;
+        display: grid;
+        place-items: center;
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.08);
+        color: white;
+        font-size: 1.2rem;
+        font-weight: 800;
+      }
+
+      .brand-title { font-weight: 700; font-size: 1.08rem; }
+      .brand-sub { font-size: 0.74rem; color: rgba(255,255,255,0.72); }
+
+      .user-box {
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 14px;
+        padding: 10px 12px;
+        margin: 12px 0 18px;
+      }
+
+      .user-box-card {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 12px;
+        padding: 8px 8px;
+        margin-bottom: 12px;
+      }
+
+      .user-mini-photo {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        object-fit: cover;
+        background: #fff;
+        display: block;
+        border: 2px solid rgba(255,255,255,0.2);
+      }
+
+      .user-mini-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+      }
+
+      .user-mini-meta strong {
+        font-size: 0.81rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .user-mini-meta small {
+        color: rgba(255,255,255,0.72);
+        font-size: 0.68rem;
+      }
+
+      .label-mini {
+        font-size: 0.68rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.8);
+        display: inline-block;
+        margin-bottom: 8px;
+      }
+
+      .user-select {
+        width: 100%;
+        border: none;
+        background: transparent;
+        color: #fff;
+        outline: none;
+        font-size: 0.95rem;
+      }
+
+      .user-select option { color: #111; }
+
+      .nav {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .nav-btn {
+        width: 100%;
+        border: none;
+        background: transparent;
+        color: rgba(255,255,255,0.85);
+        border-radius: 12px;
+        padding: 11px 12px;
+        text-align: left;
+        font-weight: 700;
+        transition: 0.2s ease;
+      }
+
+      .nav-btn:hover { background: rgba(255,255,255,0.06); }
+      .nav-btn.active {
+        background: rgba(255,255,255,0.12);
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+      }
+
+      .main { padding: 26px 26px 40px; }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+      }
+
+      .search-box {
+        flex: 1;
+        min-width: 220px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: var(--shadow);
+      }
+
+      .search-box input {
+        width: 100%;
+        border: none;
+        outline: none;
+        background: transparent;
+        color: var(--text);
+      }
+
+      .right-tools {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .chip {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 8px 12px;
+        font-weight: 700;
+        color: var(--muted);
+      }
+
+      .chip.primary {
+        background: var(--primary-soft);
+        color: var(--primary);
+      }
+
+      .user-pill {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 8px 10px;
+        box-shadow: var(--shadow);
+      }
+
+      .avatar-wrapper {
+        position: relative;
+        display: inline-block;
+      }
+
+      .avatar-img {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        object-fit: cover;
+        display: block;
+        border: 2px solid rgba(29,88,72,0.12);
+      }
+
+      .profile-photo-wrap {
+        position: relative;
+        display: inline-block;
+      }
+
+      .photo-edit-btn,
+      .avatar-edit-btn {
+        position: absolute;
+        right: -2px;
+        bottom: -2px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #fff;
+        color: var(--primary);
+        font-size: 10px;
+        font-weight: 700;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--line);
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      }
+
+      .hidden-file-input {
+        display: none;
+      }
+
+      .user-pill strong { display: block; font-size: 0.88rem; }
+      .user-pill small { color: var(--muted); font-size: 0.72rem; }
+
+      .header-block {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+      }
+
+      .page-title { margin: 0; font-size: clamp(1.7rem, 3vw, 2.3rem); }
+      .page-subtitle { margin: 6px 0 0; color: var(--muted); }
+
+      .status-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .status-chip {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 8px 12px;
+        color: var(--muted);
+        font-weight: 700;
+      }
+
+      .status-chip.active {
+        background: var(--primary-soft);
+        color: var(--primary);
+        border-color: rgba(29, 88, 72, 0.18);
+      }
+
+      .section {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 18px;
+        margin-bottom: 18px;
+      }
+
+      .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+
+      .section-header h3 { margin: 0; font-size: 1.05rem; }
+      .muted { color: var(--muted); }
+
+      .summary-box {
+        background: var(--primary-soft);
+        border-left: 4px solid var(--primary);
+        border-radius: 10px;
+        padding: 12px 14px;
+        color: var(--primary);
+        font-weight: 700;
+        margin-bottom: 18px;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 14px;
+        margin-bottom: 18px;
+      }
+
+      .stat-card {
+        background: linear-gradient(180deg, #fff, #f3faf7);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 16px;
+        min-height: 120px;
+      }
+
+      .stat-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 14px;
+      }
+
+      .stat-label {
+        color: var(--muted);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .stat-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        font-size: 1.05rem;
+      }
+
+      .icon-green { background: #eafaf0; color: var(--success); }
+      .icon-red { background: #fdecec; color: var(--danger); }
+      .icon-blue { background: #edf4ff; color: var(--info); }
+      .icon-gold { background: #fff3df; color: var(--warning); }
+
+      .stat-value {
+        font-size: clamp(1.4rem, 2vw, 1.9rem);
+        font-weight: 800;
+      }
+
+      .trend {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 10px;
+        padding: 5px 8px;
+        border-radius: 999px;
+        font-size: 0.74rem;
+        font-weight: 700;
+      }
+
+      .trend.up { background: #eafaf0; color: var(--success); }
+      .trend.down { background: #fdecec; color: var(--danger); }
+
+      .main-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 18px;
+        margin-bottom: 18px;
+      }
+
+      .chart-wrap {
+        height: 220px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 8px 4px 0;
+      }
+
+      .bar-col {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: end;
+        gap: 8px;
+        flex: 1;
+        height: 100%;
+      }
+
+      .bar {
+        width: 100%;
+        max-width: 42px;
+        border-radius: 12px 12px 0 0;
+        background: linear-gradient(180deg, #bfe5c9, var(--primary));
+        min-height: 32px;
+      }
+
+      .bar.alt { background: linear-gradient(180deg, #d8f4e3, #7fbc9d); }
+      .bar-label { color: var(--muted); font-size: 0.72rem; }
+
+      .mini-list { display: flex; flex-direction: column; gap: 12px; }
+      .mini-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 8px;
+        border-radius: 12px;
+        background: #f9fbfa;
+      }
+
+      .mini-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+
+      .mini-item strong { display: block; }
+      .mini-item small { color: var(--muted); }
+      .mini-item .value { margin-left: auto; font-weight: 700; }
+
+      .table-wrap { overflow-x: auto; }
+
+      table {
+        width: 100%;
+        min-width: 760px;
+        border-collapse: collapse;
+      }
+
+      th, td {
+        text-align: left;
+        padding: 12px 10px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+
+      th {
+        background: #fafcfb;
+        color: var(--muted);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      tbody tr:hover { background: #f9fbfa; }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 700;
+      }
+
+      .badge.income { background: #eafaf0; color: var(--success); }
+      .badge.expense { background: #fdecec; color: var(--danger); }
+      .badge.transfer { background: #edf4ff; color: var(--info); }
+      .badge.status-diajukan { background: #fff4df; color: var(--warning); }
+      .badge.status-disetujui { background: #eafaf0; color: var(--success); }
+      .badge.status-perlu-revisi { background: #fff1f1; color: var(--danger); }
+      .badge.status-ditolak { background: #ffecef; color: var(--danger); }
+      .badge.status-dicairkan { background: #e7faf4; color: var(--primary); }
+
+      .money { font-weight: 700; }
+      .money.in { color: var(--success); }
+      .money.out { color: var(--danger); }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .field { display: flex; flex-direction: column; gap: 8px; }
+      .field.full { grid-column: 1 / -1; }
+
+      .empty {
+        padding: 24px;
+        text-align: center;
+        color: var(--muted);
+        border: 1px dashed var(--line);
+        border-radius: 12px;
+        background: #fbfdfc;
+      }
+
+      .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+
+      .list-card {
+        background: var(--panel-soft);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 16px;
+      }
+
+      .mini-label {
+        font-size: 0.72rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 8px;
+      }
+
+      .big-number {
+        font-size: 1.8rem;
+        font-weight: 800;
+      }
+
+      .attachment-thumb {
+        width: 52px;
+        height: 52px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: #f9fbfa;
+        display: block;
+      }
+
+      .attachment-empty {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 52px;
+        height: 52px;
+        border-radius: 10px;
+        border: 1px dashed var(--line);
+        color: var(--muted);
+        font-size: 0.68rem;
+        background: #fbfdfc;
+      }
+
+      @media (max-width: 900px) {
+        .app-shell { grid-template-columns: 1fr; }
+        .sidebar {
+          position: sticky;
+          top: 0;
+          height: auto;
+          z-index: 10;
+        }
+        .main { padding: 18px 16px 28px; }
+        .main-grid, .grid-2 { grid-template-columns: 1fr; }
+      }
+
+      @media (max-width: 560px) {
+        .form-grid { grid-template-columns: 1fr; }
+        .right-tools { width: 100%; justify-content: space-between; }
+        .user-pill { display: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="authScreen" class="auth-page">
+      <div class="auth-card">
+        <div class="auth-brand">
+          <div class="auth-badge">K</div>
+          <div>
+            <strong>KasPanitia</strong>
+            <small>Finance Portal</small>
+          </div>
+        </div>
+
+        <h1 class="auth-title">Masuk</h1>
+        <p class="auth-subtitle">Silakan masuk untuk mengakses dashboard keuangan</p>
+
+        <form id="loginForm">
+          <div class="form-group">
+            <label class="label" for="email">Email</label>
+            <input id="email" type="email" placeholder="admin@kaspanitia.id" required />
+          </div>
+
+          <div class="form-group">
+            <label class="label" for="password">Password</label>
+            <input id="password" type="password" placeholder="Masukkan password" required />
+          </div>
+
+          <button type="submit" class="btn primary">Login</button>
+
+          <div id="loginError" class="login-error"></div>
+        </form>
+      </div>
+    </div>
+
+    <div id="appScreen" class="hidden">
+      <div class="app-shell">
+        <aside class="sidebar">
+          <div class="brand">
+            <div class="brand-badge">K</div>
+            <div>
+              <div class="brand-title">KasPanitia</div>
+              <div class="brand-sub">Finance Portal</div>
+            </div>
+          </div>
+
+          <div class="user-box">
+            <div class="user-box-card">
+              <div class="profile-photo-wrap">
+                <img id="sidebarUserPhoto" class="user-mini-photo" alt="User photo" src="./assets/default-user.jpg" />
+                <label class="photo-edit-btn" for="profileUploadInput">✎</label>
+              </div>
+              <div class="user-mini-meta">
+                <strong id="sidebarUserName">Budi Bendahara</strong>
+                <small id="sidebarUserRole">Bendahara</small>
+              </div>
+            </div>
+
+            <span class="label-mini">Pengguna</span>
+            <select id="userSelect" class="user-select"></select>
+          </div>
+
+          <nav id="nav" class="nav"></nav>
+        </aside>
+
+        <main class="main">
+          <div class="topbar">
+            <div class="search-box">
+              <span>🔎</span>
+              <input id="globalSearch" type="text" placeholder="Cari transaksi, pengajuan, atau bukti..." />
+            </div>
+
+            <div class="right-tools">
+              <div class="chip primary">Live Data</div>
+              <div class="chip">Notifikasi</div>
+              <button class="btn secondary" id="exportCsvBtn" type="button">Export CSV</button>
+              <button class="btn secondary" id="downloadPdfBtn" type="button">Download PDF</button>
+              <button class="btn danger" id="resetDataBtn" type="button">Reset Data</button>
+              <button class="btn secondary" id="logoutBtn" type="button">Logout</button>
+              <button class="btn primary" id="quickAction" type="button" style="display:none;">+ Buat Transaksi</button>
+
+              <div class="user-pill">
+                <div class="avatar-wrapper">
+                  <img id="userAvatar" class="avatar-img" alt="User avatar" src="./assets/default-user.jpg" />
+                  <label class="avatar-edit-btn" for="profileUploadInput">✎</label>
+                </div>
+                <div>
+                  <strong id="userRoleTop">Bendahara</strong>
+                  <small id="userNameTop">Budi</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="header-block">
+            <div>
+              <h1 id="pageTitle" class="page-title">Dashboard</h1>
+              <p id="pageSubtitle" class="page-subtitle">Monitoring keuangan dan realisasi anggaran</p>
+            </div>
+            <div class="status-row">
+              <button class="status-chip active" type="button">Hari Ini</button>
+              <button class="status-chip" type="button">Minggu Ini</button>
+              <button class="status-chip" type="button">Bulan Ini</button>
+              <button class="status-chip" type="button">Kustom</button>
+            </div>
+          </div>
+
+          <div id="screen-dashboard" class="screen"></div>
+          <div id="screen-rab" class="screen hidden"></div>
+          <div id="screen-pengajuan" class="screen hidden"></div>
+          <div id="screen-transaksi" class="screen hidden"></div>
+          <div id="screen-laporan" class="screen hidden"></div>
+          <div id="screen-audit" class="screen hidden"></div>
+          <div id="screen-users" class="screen hidden"></div>
+        </main>
+      </div>
+    </div>
+
+    <input id="profileUploadInput" type="file" accept="image/*" class="hidden-file-input" />
+
+    <script>
+      const STORAGE_KEY = "kaspanitia-live-v1";
+      const AUTH_KEY = "kaspanitia-auth-v1";
+
+      const defaultState = {
+        currentUserId: "u-bendahara",
+        users: [
+          { id: "u-admin", name: "Admin Sistem", email: "admin@kaspanitia.id", role: "Admin", divisi: "-" },
+          { id: "u-ketua", name: "Rina Ketua", email: "ketua@kaspanitia.id", role: "Ketua Panitia", divisi: "-" },
+          { id: "u-bendahara", name: "Budi Bendahara", email: "bendahara@kaspanitia.id", role: "Bendahara", divisi: "-" },
+          { id: "u-divisi-acara", name: "Ayu Acara", email: "acara@kaspanitia.id", role: "Koordinator Divisi", divisi: "Acara" },
+          { id: "u-divisi-humas", name: "Dian Humas", email: "humas@kaspanitia.id", role: "Koordinator Divisi", divisi: "Humas" }
+        ],
+        accounts: [
+          { id: "acc-cash", name: "Kas Tunai", type: "Kas Tunai", saldoAwal: 0 },
+          { id: "acc-bank", name: "Rekening Bank", type: "Rekening Bank", saldoAwal: 0 }
+        ],
+        divisions: [
+          { id: "div-acara", name: "Acara", coordinator: "Ayu Acara" },
+          { id: "div-humas", name: "Humas", coordinator: "Dian Humas" },
+          { id: "div-logistik", name: "Logistik", coordinator: "Budi Bendahara" }
+        ],
+        rab: [],
+        submissions: [],
+        transactions: [],
+        auditLog: []
+      };
+
+      let activeScreen = "dashboard";
+      let state = loadState();
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultState));
+            return structuredClone(defaultState);
+          }
+          const parsed = JSON.parse(raw);
+          if (!parsed || !parsed.users) throw new Error("invalid");
+          return parsed;
+        } catch {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultState));
+          return structuredClone(defaultState);
+        }
+      }
+
+      function saveState() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }
+
+      function parseNumber(v) {
+        const n = Number(v);
+        return Number.isFinite(n) ? n : 0;
+      }
+
+      function formatCurrency(value) {
+        return new Intl.NumberFormat("id-ID", {
+          style: "currency",
+          currency: "IDR",
+          maximumFractionDigits: 0
+        }).format(parseNumber(value));
+      }
+
+      function formatDate(dateString) {
+        if (!dateString) return "-";
+        const d = new Date(dateString + "T00:00:00");
+        if (Number.isNaN(d.getTime())) return dateString;
+        return d.toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" });
+      }
+
+      function getDefaultPassword(user) {
+        const role = user.role;
+        if (role === "Admin") return "admin123";
+        if (role === "Ketua Panitia") return "ketua123";
+        if (role === "Bendahara") return "bendahara123";
+        if (role === "Koordinator Divisi") return "divisi123";
+        return "123456";
+      }
+
+      function showAuth() {
+        document.getElementById("authScreen").classList.remove("hidden");
+        document.getElementById("appScreen").classList.add("hidden");
+      }
+
+      function showApp() {
+        document.getElementById("authScreen").classList.add("hidden");
+        document.getElementById("appScreen").classList.remove("hidden");
+      }
+
+      function isLoggedIn() {
+        const auth = JSON.parse(localStorage.getItem(AUTH_KEY) || "{}");
+        return !!auth.userId && state.users.some(u => u.id === auth.userId);
+      }
+
+      function setLoggedUser(userId) {
+        localStorage.setItem(AUTH_KEY, JSON.stringify({ userId }));
+        state.currentUserId = userId;
+        saveState();
+      }
+
+      function logout() {
+        localStorage.removeItem(AUTH_KEY);
+        state.currentUserId = defaultState.currentUserId;
+        saveState();
+        showAuth();
+      }
+
+      function getCurrentUser() {
+        return state.users.find(u => u.id === state.currentUserId) || state.users[0];
+      }
+
+      function getUserById(id) {
+        return state.users.find(u => u.id === id);
+      }
+
+      function getAccountById(id) {
+        return state.accounts.find(a => a.id === id);
+      }
+
+      function canAccess(key) {
+        const role = getCurrentUser().role;
+        const map = {
+          dashboard: ["Admin", "Ketua Panitia", "Koordinator Divisi", "Bendahara"],
+          rab: ["Bendahara", "Ketua Panitia"],
+          pengajuan: ["Koordinator Divisi", "Bendahara", "Ketua Panitia"],
+          transaksi: ["Bendahara"],
+          laporan: ["Bendahara", "Ketua Panitia", "Admin"],
+          audit: ["Admin", "Bendahara", "Ketua Panitia"],
+          users: ["Admin"]
+        };
+        return (map[key] || []).includes(role);
+      }
+
+      function recordAudit(action, detail) {
+        state.auditLog.unshift({
+          id: "log-" + Date.now(),
+          time: new Date().toLocaleString("sv-SE").replace(" ", " "),
+          actor: getCurrentUser().name,
+          action,
+          detail
+        });
+        saveState();
+      }
+
+      function getAccountBalance(accountId) {
+        const account = getAccountById(accountId);
+        if (!account) return 0;
+        let total = parseNumber(account.saldoAwal);
+
+        state.transactions.forEach(tx => {
+          if (tx.accountId === accountId && tx.type === "Pemasukan") total += parseNumber(tx.nominal);
+          if (tx.accountId === accountId && tx.type === "Pengeluaran") total -= parseNumber(tx.nominal);
+          if (tx.fromAccountId === accountId && tx.type === "Transfer") total -= parseNumber(tx.nominal);
+          if (tx.toAccountId === accountId && tx.type === "Transfer") total += parseNumber(tx.nominal);
+        });
+
+        return total;
+      }
+
+      function totalPemasukan() {
+        return state.transactions
+          .filter(tx => tx.type === "Pemasukan")
+          .reduce((sum, tx) => sum + parseNumber(tx.nominal), 0);
+      }
+
+      function totalPengeluaran() {
+        return state.transactions
+          .filter(tx => tx.type === "Pengeluaran")
+          .reduce((sum, tx) => sum + parseNumber(tx.nominal), 0);
+      }
+
+      function totalAnggaran() {
+        return state.rab.reduce((sum, item) => sum + parseNumber(item.amount), 0);
+      }
+
+      function totalMenungguPersetujuan() {
+        return state.submissions.filter(s => ["Diajukan", "Perlu Revisi"].includes(s.status)).length;
+      }
+
+      function statusBadgeClass(status) {
+        const normalized = String(status || "").trim().toLowerCase().replace(/\s+/g, "-");
+        return "badge status-" + normalized;
+      }
+
+      function setCurrentUser(userId) {
+        if (!state.users.some(u => u.id === userId)) return;
+        state.currentUserId = userId;
+        saveState();
+        render();
+      }
+
+      function getUserPhoto(userId) {
+        const map = {
+          "u-admin": "./assets/default-admin.jpg",
+          "u-ketua": "./assets/default-ketua.jpg",
+          "u-bendahara": "./assets/bendahara.jpg",
+          "u-divisi-acara": "./assets/acara.jpg",
+          "u-divisi-humas": "./assets/humas.jpg"
+        };
+        return map[userId] || "./assets/default-user.jpg";
+      }
+
+      function getUserPhotoKey(userId) {
+        return `kaspanitia-photo-${userId}`;
+      }
+
+      function getStoredUserPhoto(userId) {
+        return localStorage.getItem(getUserPhotoKey(userId));
+      }
+
+      function setStoredUserPhoto(userId, base64) {
+        if (!base64) {
+          localStorage.removeItem(getUserPhotoKey(userId));
+          return;
+        }
+        localStorage.setItem(getUserPhotoKey(userId), base64);
+      }
+
+      function handleProfileUpload(event) {
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function () {
+          const base64 = reader.result;
+          const curr = getCurrentUser();
+          setStoredUserPhoto(curr.id, base64);
+
+          const photo = base64 || getUserPhoto(curr.id);
+          document.getElementById("userAvatar").src = photo;
+          document.getElementById("sidebarUserPhoto").src = photo;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function readFileAsDataURL(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = () => reject(new Error("Gagal membaca file"));
+          reader.readAsDataURL(file);
+        });
+      }
+
+      function resetState() {
+        const confirmed = window.confirm("Yakin ingin reset semua data aplikasi?");
+        if (!confirmed) return;
+        state = structuredClone(defaultState);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        activeScreen = "dashboard";
+        render();
+      }
+
+      function exportCsv() {
+        const headers = ["Jenis", "Tanggal", "Deskripsi", "Kategori", "Akun", "Divisi", "Nominal", "Status"];
+        const rows = [headers];
+
+        state.transactions.forEach(tx => {
+          rows.push([
+            tx.type || "",
+            tx.date || "",
+            tx.description || "",
+            tx.category || "",
+            getAccountById(tx.accountId)?.name || "",
+            tx.division || "",
+            String(tx.nominal ?? 0),
+            tx.status || ""
+          ]);
+        });
+
+        const csv = rows
+          .map(row =>
+            row
+              .map(value => `"${String(value).replace(/"/g, '""')}"`)
+              .join(",")
+          )
+          .join("\n");
+
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "kaspanitia-export.csv";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      function exportPdf() {
+        if (!window.jspdf) {
+          alert("Library PDF gagal dimuat.");
+          return;
+        }
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const currentUser = getCurrentUser();
+        const cash = getAccountBalance("acc-cash");
+        const bank = getAccountBalance("acc-bank");
+        const income = totalPemasukan();
+        const expense = totalPengeluaran();
+        const rabTotal = totalAnggaran();
+
+        doc.setFontSize(18);
+        doc.text("Laporan Keuangan KasPanitia", 14, 18);
+
+        doc.setFontSize(11);
+        doc.text(`Pengguna: ${currentUser.name} (${currentUser.role})`, 14, 28);
+        doc.text(`Tanggal: ${new Date().toLocaleDateString("id-ID")}`, 14, 34);
+
+        doc.setFontSize(12);
+        doc.text("Ringkasan Keuangan", 14, 48);
+
+        doc.setFontSize(10);
+        doc.text(`Pemasukan: ${formatCurrency(income)}`, 14, 58);
+        doc.text(`Pengeluaran: ${formatCurrency(expense)}`, 14, 66);
+        doc.text(`Kas Tunai: ${formatCurrency(cash)}`, 14, 74);
+        doc.text(`Rekening Bank: ${formatCurrency(bank)}`, 14, 82);
+        doc.text(`Total RAB: ${formatCurrency(rabTotal)}`, 14, 90);
+
+        let y = 110;
+        doc.setFontSize(12);
+        doc.text("Daftar Transaksi", 14, y);
+        y += 8;
+
+        const tx = state.transactions.slice(0, 12);
+
+        if (tx.length === 0) {
+          doc.setFontSize(10);
+          doc.text("Belum ada transaksi.", 14, y + 8);
+        } else {
+          tx.forEach(item => {
+            if (y > 260) {
+              doc.addPage();
+              y = 20;
+            }
+
+            doc.setFontSize(9);
+            const line = `${item.date} | ${item.type} | ${item.description} | ${formatCurrency(item.nominal)} | ${item.status}`;
+            doc.text(line, 14, y);
+            y += 8;
+          });
+        }
+
+        doc.save("laporan-keuangan-kaspanitia.pdf");
+      }
+
+      function updateQuickActionButton() {
+        const btn = document.getElementById("quickAction");
+        if (!btn) return;
+
+        const isBendahara = getCurrentUser().role === "Bendahara";
+        btn.style.display = isBendahara ? "" : "none";
+        btn.disabled = !isBendahara;
+      }
+
+      function updateHeaderMeta() {
+        const curr = getCurrentUser();
+
+        document.getElementById("userRoleTop").textContent = curr.role;
+        document.getElementById("userNameTop").textContent = curr.name;
+        document.getElementById("sidebarUserName").textContent = curr.name;
+        document.getElementById("sidebarUserRole").textContent = curr.role;
+
+        const stored = getStoredUserPhoto(curr.id);
+        const photo = stored || getUserPhoto(curr.id);
+
+        document.getElementById("userAvatar").src = photo;
+        document.getElementById("sidebarUserPhoto").src = photo;
+
+        document.title = `KasPanitia • ${curr.name} (${curr.role})`;
+      }
+
+      function renderNav() {
+        const tabs = [
+          { key: "dashboard", label: "Dashboard" },
+          { key: "rab", label: "RAB" },
+          { key: "pengajuan", label: "Pengajuan" },
+          { key: "transaksi", label: "Transaksi" },
+          { key: "laporan", label: "Laporan" },
+          { key: "audit", label: "Audit Log" },
+          { key: "users", label: "Pengguna" }
+        ];
+
+        const visible = tabs.filter(tab => canAccess(tab.key));
+        document.getElementById("nav").innerHTML = visible.map(tab => `
+          <button class="nav-btn ${activeScreen === tab.key ? "active" : ""}" data-nav="${tab.key}">${tab.label}</button>
+        `).join("");
+
+        document.querySelectorAll("[data-nav]").forEach(button => {
+          button.addEventListener("click", () => {
+            activeScreen = button.dataset.nav;
+            render();
+          });
+        });
+
+        const userSelect = document.getElementById("userSelect");
+        userSelect.innerHTML = state.users.map(user => `
+          <option value="${user.id}" ${user.id === state.currentUserId ? "selected" : ""}>${user.name} (${user.role})</option>
+        `).join("");
+        userSelect.onchange = (e) => setCurrentUser(e.target.value);
+      }
+
+      function renderScreenVisibility() {
+        const screens = ["dashboard", "rab", "pengajuan", "transaksi", "laporan", "audit", "users"];
+        screens.forEach(key => {
+          const el = document.getElementById("screen-" + key);
+          if (!el) return;
+          const visible = key === activeScreen && canAccess(key);
+          el.classList.toggle("hidden", !visible);
+        });
+        if (!canAccess(activeScreen)) activeScreen = "dashboard";
+      }
+
+      function renderDashboard() {
+        if (!canAccess("dashboard")) return;
+
+        document.getElementById("pageTitle").textContent = "Dashboard";
+        document.getElementById("pageSubtitle").textContent = "Monitoring keuangan dan realisasi anggaran";
+
+        const cashBal = getAccountBalance("acc-cash");
+        const bankBal = getAccountBalance("acc-bank");
+        const incoming = totalPemasukan();
+        const outgoing = totalPengeluaran();
+        const totalRAB = totalAnggaran();
+        const pending = totalMenungguPersetujuan();
+
+        document.getElementById("screen-dashboard").innerHTML = `
+          <div class="section">
+            <div class="summary-box">Selamat datang, ${getCurrentUser().name}. Belum ada data transaksi atau anggaran yang masuk.</div>
+
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-head">
+                  <span class="stat-label">Pemasukan</span>
+                  <span class="stat-icon icon-green">↗</span>
+                </div>
+                <div class="stat-value">${formatCurrency(incoming)}</div>
+                <div class="trend up">▲ 0%</div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-head">
+                  <span class="stat-label">Pengeluaran</span>
+                  <span class="stat-icon icon-red">↘</span>
+                </div>
+                <div class="stat-value">${formatCurrency(outgoing)}</div>
+                <div class="trend down">▼ 0%</div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-head">
+                  <span class="stat-label">Kas Tunai</span>
+                  <span class="stat-icon icon-blue">💵</span>
+                </div>
+                <div class="stat-value">${formatCurrency(cashBal)}</div>
+                <div class="trend up">▲ 0%</div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-head">
+                  <span class="stat-label">Rekening Bank</span>
+                  <span class="stat-icon icon-gold">🏦</span>
+                </div>
+                <div class="stat-value">${formatCurrency(bankBal)}</div>
+                <div class="trend up">▲ 0%</div>
+              </div>
+            </div>
+
+            <div class="main-grid">
+              <div class="section" style="padding:18px; margin:0;">
+                <div class="section-header">
+                  <h3>Realisasi Anggaran</h3>
+                  <span class="muted">Belum ada data</span>
+                </div>
+                <div class="chart-wrap">
+                  <div class="bar-col"><div class="bar" style="height:0%"></div><div class="bar-label">Jan</div></div>
+                  <div class="bar-col"><div class="bar alt" style="height:0%"></div><div class="bar-label">Feb</div></div>
+                  <div class="bar-col"><div class="bar" style="height:0%"></div><div class="bar-label">Mar</div></div>
+                  <div class="bar-col"><div class="bar alt" style="height:0%"></div><div class="bar-label">Apr</div></div>
+                  <div class="bar-col"><div class="bar" style="height:0%"></div><div class="bar-label">Mei</div></div>
+                  <div class="bar-col"><div class="bar alt" style="height:0%"></div><div class="bar-label">Jun</div></div>
+                  <div class="bar-col"><div class="bar" style="height:0%"></div><div class="bar-label">Jul</div></div>
+                </div>
+              </div>
+
+              <div class="section" style="padding:18px; margin:0;">
+                <div class="section-header">
+                  <h3>Ringkasan</h3>
+                  <span class="muted">RAB aktif</span>
+                </div>
+                <div class="mini-list">
+                  <div class="mini-item">
+                    <span class="mini-dot" style="background:#1d5848"></span>
+                    <div>
+                      <strong>Total Anggaran</strong>
+                      <small>Keseluruhan divisi</small>
+                    </div>
+                    <span class="value">${formatCurrency(totalRAB)}</span>
+                  </div>
+                  <div class="mini-item">
+                    <span class="mini-dot" style="background:#2d6ec8"></span>
+                    <div>
+                      <strong>Menunggu</strong>
+                      <small>Pengajuan masuk</small>
+                    </div>
+                    <span class="value">${pending}</span>
+                  </div>
+                  <div class="mini-item">
+                    <span class="mini-dot" style="background:#b97b1d"></span>
+                    <div>
+                      <strong>Saldo net</strong>
+                      <small>Pemasukan - pengeluaran</small>
+                    </div>
+                    <span class="value">${formatCurrency(incoming - outgoing)}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="section" style="padding:18px; margin:0;">
+              <div class="section-header">
+                <h3>Transaksi Terbaru</h3>
+                <span class="muted">Belum ada data</span>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Transaksi</th>
+                      <th>Kategori</th>
+                      <th>Divisi</th>
+                      <th>Nilai</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td colspan="5"><div class="empty">Belum ada transaksi.</div></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderRab() {
+        if (!canAccess("rab")) return;
+        const canEdit = getCurrentUser().role === "Bendahara";
+
+        document.getElementById("screen-rab").innerHTML = `
+          <div class="section">
+            <div class="section-header">
+              <h3>Anggaran / RAB</h3>
+              <span class="muted">${canEdit ? "Mode edit" : "Mode baca"}</span>
+            </div>
+
+            ${canEdit ? `
+              <form id="rabForm">
+                <div class="form-grid">
+                  <div class="field">
+                    <label class="label">Divisi</label>
+                    <select name="division" required>
+                      ${state.divisions.map(d => `<option value="${d.name}">${d.name}</option>`).join("")}
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label class="label">Kategori</label>
+                    <input type="text" name="category" placeholder="Contoh: Konsumsi" required />
+                  </div>
+                  <div class="field">
+                    <label class="label">Nominal</label>
+                    <input type="number" name="amount" min="0" step="1000" required />
+                  </div>
+                  <div class="field">
+                    <label class="label">Catatan</label>
+                    <input type="text" name="notes" placeholder="Catatan tambahan" />
+                  </div>
+                </div>
+                <div style="margin-top:12px;">
+                  <button type="submit" class="btn primary">Simpan RAB</button>
+                </div>
+              </form>
+            ` : ""}
+
+            <div style="margin-top:18px;">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Divisi</th>
+                      <th>Kategori</th>
+                      <th>Nominal</th>
+                      <th>Catatan</th>
+                      ${canEdit ? "<th>Aksi</th>" : ""}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${state.rab.length ? state.rab.map(item => `
+                      <tr>
+                        <td>${item.division}</td>
+                        <td>${item.category || "-"}</td>
+                        <td>${formatCurrency(item.amount)}</td>
+                        <td>${item.notes || "-"}</td>
+                        ${canEdit ? `<td><button class="btn danger btn-delete-rab" data-id="${item.id}">Hapus</button></td>` : ""}
+                      </tr>
+                    `).join("") : `<tr><td colspan="${canEdit ? 5 : 4}"><div class="empty">Belum ada RAB.</div></td></tr>`}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        `;
+
+        document.getElementById("rabForm")?.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const fd = new FormData(e.target);
+          const division = String(fd.get("division") || "").trim();
+          const category = String(fd.get("category") || "").trim();
+          const amount = parseNumber(fd.get("amount"));
+          const notes = String(fd.get("notes") || "").trim();
+
+          if (!division || !category || amount <= 0) {
+            alert("Divisi, kategori, dan nominal harus diisi dengan benar.");
+            return;
+          }
+
+          state.rab.push({ id: "rab-" + Date.now(), division, category, amount, notes });
+          saveState();
+          recordAudit("Tambah RAB", `Menambahkan item ${category} untuk ${division}`);
+          render();
+        });
+
+        document.querySelectorAll(".btn-delete-rab").forEach(button => {
+          button.addEventListener("click", () => {
+            const id = button.dataset.id;
+            state.rab = state.rab.filter(r => r.id !== id);
+            saveState();
+            recordAudit("Hapus RAB", `Menghapus item RAB ${id}`);
+            render();
+          });
+        });
+      }
+
+      function renderPengajuan() {
+        if (!canAccess("pengajuan")) return;
+        const currentUser = getCurrentUser();
+        const isBendahara = currentUser.role === "Bendahara";
+        const isKoordinator = currentUser.role === "Koordinator Divisi";
+        const isKetua = currentUser.role === "Ketua Panitia";
+
+        const visibleSubmissions = state.submissions.filter(item => {
+          if (isBendahara || isKetua) return true;
+          if (isKoordinator) return item.requestorId === currentUser.id;
+          return true;
+        });
+
+        document.getElementById("screen-pengajuan").innerHTML = `
+          <div class="section">
+            <div class="section-header">
+              <h3>Pengajuan Dana</h3>
+              <span class="muted">${isBendahara ? "Review dan approve" : "Daftar pengajuan"}</span>
+            </div>
+
+            ${(isKoordinator || isBendahara) ? `
+              <form id="submissionForm">
+                <div class="form-grid">
+                  <div class="field">
+                    <label class="label">Divisi</label>
+                    <select name="division" required>
+                      ${state.divisions.map(d => `<option value="${d.name}">${d.name}</option>`).join("")}
+                    </select>
+                  </div>
+
+                  <div class="field">
+                    <label class="label">Judul Pengajuan</label>
+                    <input type="text" name="title" placeholder="Judul pengajuan" required />
+                  </div>
+
+                  <div class="field">
+                    <label class="label">Kategori</label>
+                    <input type="text" name="category" placeholder="Contoh: Konsumsi" required />
+                  </div>
+
+                  <div class="field">
+                    <label class="label">Nominal</label>
+                    <input type="number" name="nominal" min="0" step="1000" required />
+                  </div>
+
+                  <div class="field">
+                    <label class="label">Tanggal</label>
+                    <input type="date" name="date" required />
+                  </div>
+
+                  <div class="field">
+                    <label class="label">Lampiran</label>
+                    <input type="text" name="attachment" placeholder="dokumen.pdf" />
+                  </div>
+
+                  <div class="field">
+                    <label class="label">Foto Bon / Struk</label>
+                    <input type="file" name="receiptImage" accept="image/*" />
+                  </div>
+
+                  <div class="field full">
+                    <label class="label">Keterangan</label>
+                    <textarea name="notes" placeholder="Tujuan penggunaan dana"></textarea>
+                  </div>
+                </div>
+
+                <div style="margin-top:12px;">
+                  <button type="submit" class="btn primary">Kirim Pengajuan</button>
+                </div>
+              </form>
+            ` : ""}
+
+            <div style="margin-top:20px;">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Divisi</th>
+                      <th>Judul</th>
+                      <th>Kategori</th>
+                      <th>Nominal</th>
+                      <th>Tanggal</th>
+                      <th>Status</th>
+                      <th>Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${visibleSubmissions.length ? visibleSubmissions.map(item => {
+                      const pemohon = getUserById(item.requestorId);
+                      let actions = "<span class='muted'>-</span>";
+
+                      if (isBendahara) {
+                        actions = `
+                          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                            <button class="btn primary btn-status" data-id="${item.id}" data-status="Disetujui">Setuju</button>
+                            <button class="btn warning btn-status" data-id="${item.id}" data-status="Perlu Revisi">Revisi</button>
+                            <button class="btn danger btn-status" data-id="${item.id}" data-status="Ditolak">Tolak</button>
+                          </div>
+                        `;
+                      } else if (isKoordinator && item.requestorId === currentUser.id) {
+                        actions = `<button class="btn secondary btn-status" data-id="${item.id}" data-status="Diajukan">Ajukan Ulang</button>`;
+                      }
+
+                      return `
+                        <tr>
+                          <td>${item.division}</td>
+                          <td>
+                            <strong>${item.title || "-"}</strong>
+                            ${item.receiptImage ? `<div style="margin-top:8px;"><img class="attachment-thumb" src="${item.receiptImage}" alt="Struk / Bon" /></div>` : `<div class="attachment-empty">No image</div>`}
+                            <br>
+                            <span class="muted" style="font-size:0.76rem;">Pemohon: ${pemohon ? pemohon.name : "-"}</span>
+                          </td>
+                          <td>${item.category || "-"}</td>
+                          <td>${formatCurrency(item.nominal || 0)}</td>
+                          <td>${formatDate(item.date)}</td>
+                          <td><span class="${statusBadgeClass(item.status)}">${item.status}</span></td>
+                          <td>${actions}</td>
+                        </tr>
+                      `;
+                    }).join("") : `<tr><td colspan="7"><div class="empty">Belum ada pengajuan.</div></td></tr>`}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        `;
+
+        document.getElementById("submissionForm")?.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const fd = new FormData(e.target);
+          const title = String(fd.get("title") || "").trim();
+          const category = String(fd.get("category") || "").trim();
+          const division = String(fd.get("division") || "").trim();
+          const date = String(fd.get("date") || "").trim();
+          const nominal = parseNumber(fd.get("nominal"));
+          const receiptFile = e.target.querySelector('input[name="receiptImage"]')?.files?.[0];
+          const receiptImage = receiptFile ? await readFileAsDataURL(receiptFile) : "";
+
+          if (!title || !category || !division || !date || nominal <= 0) {
+            alert("Judul, kategori, divisi, tanggal, dan nominal wajib diisi.");
+            return;
+          }
+
+          state.submissions.unshift({
+            id: "sub-" + Date.now(),
+            requestorId: currentUser.id,
+            division,
+            title,
+            category,
+            nominal,
+            date,
+            status: "Diajukan",
+            notes: String(fd.get("notes") || "").trim(),
+            attachment: String(fd.get("attachment") || "").trim() || "-",
+            receiptImage
+          });
+
+          saveState();
+          recordAudit("Buat pengajuan", `${title} • ${formatCurrency(nominal)}`);
+          render();
+        });
+
+        document.querySelectorAll(".btn-status").forEach(button => {
+          button.addEventListener("click", () => {
+            const id = button.dataset.id;
+            const status = button.dataset.status;
+            state.submissions = state.submissions.map(item => item.id === id ? { ...item, status } : item);
+            saveState();
+            recordAudit("Ubah status pengajuan", `ID ${id} -> ${status}`);
+            render();
+          });
+        });
+      }
+
+      function renderTransaksi() {
+        if (!canAccess("transaksi")) return;
+        const isBendahara = getCurrentUser().role === "Bendahara";
+
+        document.getElementById("screen-transaksi").innerHTML = `
+          <div class="section">
+            <div class="section-header">
+              <h3>Transaksi Keuangan</h3>
+              <span class="muted">${isBendahara ? "Input dan posting" : "Read only"}</span>
+            </div>
+
+            ${isBendahara ? `
+              <form id="transactionForm">
+                <div class="form-grid">
+                  <div class="field">
+                    <label class="label">Jenis</label>
+                    <select name="type" required>
+                      <option value="Pemasukan">Pemasukan</option>
+                      <option value="Pengeluaran">Pengeluaran</option>
+                      <option value="Transfer">Transfer Internal</option>
+                    </select>
+                  </div>
+
+                  <div class="field">
+                    <label class="label">Tanggal</label>
+                    <input type="date" name="date" required />
+                  </div>
+
+                  <div class="field">
+                    <label class="label">Deskripsi</label>
+                    <input type="text" name="description" placeholder="Deskripsi transaksi" required />
+                  </div>
+
+                  <div class="field">
+                    <label class="label">Kategori</label>
+                    <input type="text" name="category" placeholder="Contoh: Sponsor" required />
+                  </div>
+
+                  <div class="field">
+                    <label class="label">Akun</label>
+                    <select name="accountId" required>
+                      ${state.accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join("")}
+                    </select>
+                  </div>
+
+                  <div class="field">
+                    <label class="label">Divisi</label>
+                    <select name="division">
+                      <option value="-">-</option>
+                      ${state.divisions.map(d => `<option value="${d.name}">${d.name}</option>`).join("")}
+                    </select>
+                  </div>
+
+                  <div class="field">
+                    <label class="label">Foto Bon / Struk</label>
+                    <input type="file" name="receiptImage" accept="image/*" />
+                  </div>
+
+                  <div class="field">
+                    <label class="label">Nominal</label>
+                    <input type="number" name="nominal" min="0" step="1000" required />
+                  </div>
+
+                  <div class="field">
+                    <label class="label">Transfer Tujuan</label>
+                    <select name="toAccountId">
+                      <option value="">-</option>
+                      ${state.accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join("")}
+                    </select>
+                  </div>
+                </div>
+
+                <div style="margin-top:14px;">
+                  <button type="submit" class="btn primary">Posting Transaksi</button>
+                </div>
+              </form>
+            ` : `<div class="summary-box">Anda hanya dapat melihat transaksi keuangan.</div>`}
+
+            <div style="margin-top:18px;">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Tanggal</th>
+                      <th>Deskripsi</th>
+                      <th>Jenis</th>
+                      <th>Akun</th>
+                      <th>Nominal</th>
+                      <th>Divisi</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${state.transactions.length ? state.transactions.map(tx => `
+                      <tr>
+                        <td>${formatDate(tx.date)}</td>
+                        <td>
+                          ${tx.description || "-"}
+                          ${tx.receiptImage ? `<div style="margin-top:8px;"><img class="attachment-thumb" src="${tx.receiptImage}" alt="Struk / Bon" /></div>` : `<div class="attachment-empty">No image</div>`}
+                        </td>
+                        <td><span class="badge ${tx.type === "Pemasukan" ? "income" : tx.type === "Pengeluaran" ? "expense" : "transfer"}">${tx.type}</span></td>
+                        <td>${getAccountById(tx.accountId)?.name || "-"}</td>
+                        <td class="money ${tx.type === "Pemasukan" ? "in" : "out"}">${tx.type === "Pemasukan" ? "+" : "-"}${formatCurrency(tx.nominal || 0)}</td>
+                        <td>${tx.division || "-"}</td>
+                        <td>${tx.status}</td>
+                      </tr>
+                    `).join("") : `<tr><td colspan="7"><div class="empty">Belum ada transaksi.</div></td></tr>`}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        `;
+
+        document.getElementById("transactionForm")?.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const fd = new FormData(e.target);
+          const type = String(fd.get("type") || "");
+          const description = String(fd.get("description") || "").trim();
+          const category = String(fd.get("category") || "").trim();
+          const accountId = String(fd.get("accountId") || "");
+          const date = String(fd.get("date") || "").trim();
+          const division = String(fd.get("division") || "-").trim();
+          const nominal = parseNumber(fd.get("nominal"));
+          const receiptFile = e.target.querySelector('input[name="receiptImage"]')?.files?.[0];
+          const receiptImage = receiptFile ? await readFileAsDataURL(receiptFile) : "";
+
+          if (!type || !description || !category || !accountId || !date || nominal <= 0) {
+            alert("Data transaksi tidak lengkap atau nominal tidak valid.");
+            return;
+          }
+
+          if (type === "Transfer") {
+            const to = String(fd.get("toAccountId") || "");
+            if (!to || to === accountId) {
+              alert("Untuk transfer internal, pilih akun tujuan yang berbeda.");
+              return;
+            }
+          }
+
+          const payload = {
+            id: "tx-" + Date.now(),
+            date,
+            description,
+            type,
+            category,
+            accountId,
+            division: division || "-",
+            nominal,
+            status: "Diposting",
+            receiptImage
+          };
+
+          if (type === "Transfer") {
+            payload.fromAccountId = accountId;
+            payload.toAccountId = String(fd.get("toAccountId") || accountId);
+          }
+
+          state.transactions.unshift(payload);
+          saveState();
+          recordAudit("Posting transaksi", `${type} • ${description} • ${formatCurrency(nominal)}`);
+          render();
+        });
+      }
+
+      function renderLaporan() {
+        if (!canAccess("laporan")) return;
+        const cash = getAccountBalance("acc-cash");
+        const bank = getAccountBalance("acc-bank");
+        const income = totalPemasukan();
+        const expense = totalPengeluaran();
+
+        document.getElementById("pageTitle").textContent = "Laporan";
+        document.getElementById("pageSubtitle").textContent = "Ringkasan keuangan dan realisasi";
+
+        document.getElementById("screen-laporan").innerHTML = `
+          <div class="section">
+            <div class="section-header">
+              <h3>Laporan Keuangan</h3>
+              <span class="muted">PDF / Excel</span>
+            </div>
+
+            <div class="grid-2">
+              <div class="list-card">
+                <div class="mini-label">Pemasukan</div>
+                <div class="big-number">${formatCurrency(income)}</div>
+              </div>
+
+              <div class="list-card">
+                <div class="mini-label">Pengeluaran</div>
+                <div class="big-number">${formatCurrency(expense)}</div>
+              </div>
+
+              <div class="list-card">
+                <div class="mini-label">Saldo Kas</div>
+                <div class="big-number">${formatCurrency(cash)}</div>
+              </div>
+
+              <div class="list-card">
+                <div class="mini-label">Saldo Bank</div>
+                <div class="big-number">${formatCurrency(bank)}</div>
+              </div>
+            </div>
+
+            <div style="margin-top:20px;">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Divisi</th>
+                      <th>RAB</th>
+                      <th>Realisasi</th>
+                      <th>Sisa</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${state.divisions.length ? state.divisions.map(div => {
+                      const rabTotal = state.rab.filter(r => r.division === div.name).reduce((sum, r) => sum + parseNumber(r.amount), 0);
+                      const realized = state.transactions.filter(tx => tx.division === div.name && tx.type === "Pengeluaran").reduce((sum, tx) => sum + parseNumber(tx.nominal), 0);
+                      return `
+                        <tr>
+                          <td>${div.name}</td>
+                          <td>${formatCurrency(rabTotal)}</td>
+                          <td>${formatCurrency(realized)}</td>
+                          <td>${formatCurrency(rabTotal - realized)}</td>
+                        </tr>
+                      `;
+                    }).join("") : `<tr><td colspan="4"><div class="empty">Belum ada data divisi.</div></td></tr>`}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderAudit() {
+        if (!canAccess("audit")) return;
+
+        document.getElementById("screen-audit").innerHTML = `
+          <div class="section">
+            <div class="section-header">
+              <h3>Audit Log</h3>
+              <span class="muted">Jejak aktivitas</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Waktu</th>
+                    <th>Pengguna</th>
+                    <th>Aksi</th>
+                    <th>Detail</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${state.auditLog.length ? state.auditLog.map(log => `
+                    <tr>
+                      <td>${log.time || "-"}</td>
+                      <td>${log.actor || "-"}</td>
+                      <td>${log.action || "-"}</td>
+                      <td>${log.detail || "-"}</td>
+                    </tr>
+                  `).join("") : `<tr><td colspan="4"><div class="empty">Belum ada log audit.</div></td></tr>`}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderUsers() {
+        if (!canAccess("users")) return;
+
+        document.getElementById("screen-users").innerHTML = `
+          <div class="section">
+            <div class="section-header">
+              <h3>Kelola Pengguna</h3>
+              <span class="muted">Admin only</span>
+            </div>
+
+            <form id="userForm">
+              <div class="form-grid">
+                <div class="field">
+                  <label class="label">Nama</label>
+                  <input type="text" name="name" required />
+                </div>
+
+                <div class="field">
+                  <label class="label">Email</label>
+                  <input type="email" name="email" required />
+                </div>
+
+                <div class="field">
+                  <label class="label">Role</label>
+                  <select name="role" required>
+                    <option value="Admin">Admin</option>
+                    <option value="Ketua Panitia">Ketua Panitia</option>
+                    <option value="Koordinator Divisi">Koordinator Divisi</option>
+                    <option value="Bendahara">Bendahara</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label class="label">Divisi</label>
+                  <input type="text" name="divisi" placeholder="Opsional" />
+                </div>
+              </div>
+
+              <div style="margin-top:12px;">
+                <button class="btn primary" type="submit">Tambah User</button>
+              </div>
+            </form>
+
+            <div style="margin-top:20px;">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Nama</th>
+                      <th>Email</th>
+                      <th>Role</th>
+                      <th>Divisi</th>
+                      <th>Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${state.users.map(user => `
+                      <tr>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>${user.role}</td>
+                        <td>${user.divisi || "-"}</td>
+                        <td><button class="btn danger btn-delete-user" data-id="${user.id}" ${user.id === state.currentUserId ? "disabled" : ""}>Hapus</button></td>
+                      </tr>
+                    `).join("")}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        `;
+
+        document.getElementById("userForm").addEventListener("submit", (e) => {
+          e.preventDefault();
+          const fd = new FormData(e.target);
+          const name = String(fd.get("name") || "").trim();
+          const email = String(fd.get("email") || "").trim();
+          const role = String(fd.get("role") || "").trim();
+          const divisi = String(fd.get("divisi") || "").trim();
+
+          if (!name || !email || !role) {
+            alert("Nama, email, dan role wajib diisi.");
+            return;
+          }
+
+          state.users.push({
+            id: "u-" + Date.now(),
+            name,
+            email,
+            role,
+            divisi: divisi || "-"
+          });
+
+          saveState();
+          recordAudit("Tambah user", `${name} (${role})`);
+          render();
+        });
+
+        document.querySelectorAll(".btn-delete-user").forEach(button => {
+          button.addEventListener("click", () => {
+            const id = button.dataset.id;
+            if (id === state.currentUserId) {
+              alert("Tidak bisa menghapus user yang sedang aktif.");
+              return;
+            }
+
+            state.users = state.users.filter(u => u.id !== id);
+            saveState();
+            recordAudit("Hapus user", `User dihapus dari sistem`);
+            render();
+          });
+        });
+      }
+
+      function attachStaticEvents() {
+        const searchInput = document.getElementById("globalSearch");
+        if (searchInput) {
+          searchInput.oninput = (e) => {
+            const keyword = e.target.value.trim().toLowerCase();
+            const rows = document.querySelectorAll("tbody tr");
+            rows.forEach(row => {
+              const text = row.textContent.toLowerCase();
+              row.style.display = (!keyword || text.includes(keyword)) ? "" : "none";
+            });
+          };
+        }
+
+        const quickAction = document.getElementById("quickAction");
+        if (quickAction) {
+          quickAction.onclick = () => {
+            if (getCurrentUser().role !== "Bendahara") return;
+            activeScreen = "transaksi";
+            render();
+          };
+        }
+
+        const exportBtn = document.getElementById("exportCsvBtn");
+        if (exportBtn) exportBtn.onclick = exportCsv;
+
+        const pdfBtn = document.getElementById("downloadPdfBtn");
+        if (pdfBtn) pdfBtn.onclick = exportPdf;
+
+        const resetBtn = document.getElementById("resetDataBtn");
+        if (resetBtn) resetBtn.onclick = resetState;
+
+        const logoutBtn = document.getElementById("logoutBtn");
+        if (logoutBtn) logoutBtn.onclick = logout;
+
+        const loginForm = document.getElementById("loginForm");
+        if (loginForm) {
+          loginForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const email = document.getElementById("email").value.trim().toLowerCase();
+            const password = document.getElementById("password").value.trim();
+            const user = state.users.find(u => u.email.toLowerCase() === email);
+            const errorBox = document.getElementById("loginError");
+
+            if (!user) {
+              errorBox.textContent = "Email tidak ditemukan.";
+              errorBox.classList.add("show");
+              return;
+            }
+
+            if (password !== getDefaultPassword(user)) {
+              errorBox.textContent = "Password salah.";
+              errorBox.classList.add("show");
+              return;
+            }
+
+            errorBox.classList.remove("show");
+            setLoggedUser(user.id);
+            showApp();
+            render();
+          });
+        }
+
+        const profileUploadInput = document.getElementById("profileUploadInput");
+        if (profileUploadInput) {
+          profileUploadInput.addEventListener("change", handleProfileUpload);
+        }
+      }
+
+      function render() {
+        if (isLoggedIn()) {
+          state.currentUserId = JSON.parse(localStorage.getItem(AUTH_KEY) || "{}").userId || state.currentUserId;
+          showApp();
+        } else {
+          showAuth();
+        }
+
+        if (isLoggedIn()) {
+          updateQuickActionButton();
+          renderScreenVisibility();
+          renderNav();
+          updateHeaderMeta();
+
+          if (canAccess("dashboard")) renderDashboard();
+          if (canAccess("rab")) renderRab();
+          if (canAccess("pengajuan")) renderPengajuan();
+          if (canAccess("transaksi")) renderTransaksi();
+          if (canAccess("laporan")) renderLaporan();
+          if (canAccess("audit")) renderAudit();
+          if (canAccess("users")) renderUsers();
+        }
+      }
+
+      document.querySelectorAll("#userAvatar, #sidebarUserPhoto").forEach(img => {
+        img.addEventListener("error", function () {
+          this.src = "./assets/default-user.jpg";
+        });
+      });
+
+      attachStaticEvents();
+      render();
+    </script>
+  </body>
+</html>
